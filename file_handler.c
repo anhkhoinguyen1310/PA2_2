@@ -54,14 +54,14 @@ void processFile(const char *filePath) {
             int wordLength = end - start;
 
             if (wordLength > 0) {
-                char word[256]; // Assuming no word exceeds 255 characters
+                char word[256]; 
                 memcpy(word, start, wordLength);
-                word[wordLength] = '\0'; // Null-terminate the word
+                word[wordLength] = '\0'; 
 
                 spellCheckWord(word, filePath, lineNum, wordPos);
             }
 
-            wordPos += wordLength; // Update wordPos for the next word
+            wordPos += wordLength;
             if (*end) {
                 end++;
                 wordPos++; // Skip the delimiter

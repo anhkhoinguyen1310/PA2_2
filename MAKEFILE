@@ -2,7 +2,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -O2  # Added -O2 for optimization
 
 # Target executable name
 TARGET = spchk
@@ -30,7 +30,7 @@ spell_check.o: spell_check.c spell_check.h dictionary.h
 error_report.o: error_report.c error_report.h
 	$(CC) $(CFLAGS) -c error_report.c
 
-# Cleaning up
+
 clean:
 	rm -f $(TARGET) $(OBJS)
 
