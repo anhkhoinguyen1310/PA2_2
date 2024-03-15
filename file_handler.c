@@ -1,6 +1,7 @@
 #include "file_handler.h"
 #include "spell_check.h"
 #include <stdio.h>
+#include <ctype.h> 
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
@@ -18,10 +19,58 @@ int isDirectory(const char *path) {
 
 // Process a single file
 void processFile(const char *filePath) {
-    // Placeholder for function that reads and processes the file
-    // This function should open the file, read its contents,
-    // and check each word's spelling.
     printf("Processing file: %s\n", filePath);
+
+    FILE *file = fopen(filePath, "r");
+    if (!file) {
+        fprintf(stderr, "Error opening file: %s\n", filePath);
+        return;
+    }
+
+    char line[1024];
+    int lineNum = 0;
+
+    while (fgets(line, sizeof(line), file) != NULL) {
+        lineNum++;
+        char *start = line;
+        char *end = NULL;
+        int wordPos = 1;
+
+        while (*start) {
+            // Skip leading delimiters
+            while (*start && !isalpha((unsigned char)*start)) {
+                start++;
+                wordPos++;
+            }
+
+            if (!*start) break; // End of line
+
+            end = start;
+
+            while (*end && isalpha((unsigned char)*end)) {
+                end++;
+            }
+
+            int wordLength = end - start;
+
+            if (wordLength > 0) {
+                char word[256]; // Assuming no word exceeds 255 characters
+                memcpy(word, start, wordLength);
+                word[wordLength] = '\0'; // Null-terminate the word
+
+                spellCheckWord(word, filePath, lineNum, wordPos);
+            }
+
+            wordPos += wordLength; // Update wordPos for the next word
+            if (*end) {
+                end++;
+                wordPos++; // Skip the delimiter
+            }
+            start = end;
+        }
+    }
+
+    fclose(file);
 }
 
 // Function to traverse directories and find .txt files

@@ -8,18 +8,19 @@
 
 // Helper function to check if a character is considered a delimiter
 int isDelimiter(char character) {
-    return !isalpha(character);
+    return !isalpha(character) && character != '-'; // Include hyphen for words like "spell-check"
 }
 
 // Function to process a single word for spell-checking
-void checkWord(const char* word, const char* filePath, int lineNum, int startPos) {
+void spellCheckWord(const char* word, const char* filePath, int lineNum, int wordPos) {
     if (!isWordInDictionary(word)) {
-        reportError(filePath, lineNum, startPos, word);
+        reportError(filePath, lineNum, wordPos, word);
     }
 }
 
 // Function to process the content of a file and spell-check it
-void processFile(const char *filePath) {
+void spellCheckFile(const char *filePath) {
+    printf("Opening file for spell checking: %s\n", filePath);
     FILE *file = fopen(filePath, "r");
     if (!file) {
         fprintf(stderr, "Error opening file: %s\n", filePath);
@@ -33,13 +34,13 @@ void processFile(const char *filePath) {
         lineNum++;
         char *start = line;
         char *end = NULL;
-        int startPos = 0;
+        int wordPos = 1; // Start position of the first word
 
         while (*start) {
-            // Skip leading delimiters
+            // Skip leading delimiters to find the start of a word
             while (*start && isDelimiter(*start)) {
                 start++;
-                startPos++;
+                wordPos++;
             }
             if (!*start) break; // End of line
 
@@ -50,18 +51,18 @@ void processFile(const char *filePath) {
             }
 
             // Extract the word
-            char word[256]; // Assuming no word exceeds 255 characters
             int wordLength = end - start;
-            if (wordLength < sizeof(word)) {
+            if (wordLength > 0) {
+                char word[256]; // Assuming no word exceeds 255 characters
                 memcpy(word, start, wordLength);
                 word[wordLength] = '\0'; // Null-terminate the word
 
                 // Spell-check the word
-                checkWord(word, filePath, lineNum, startPos + 1);
+                spellCheckWord(word, filePath, lineNum, wordPos);
             }
 
-            // Prepare for the next word
-            startPos += wordLength;
+            // Update start and wordPos for the next word
+            wordPos += wordLength + 1; // +1 for the delimiter
             start = end;
         }
     }
