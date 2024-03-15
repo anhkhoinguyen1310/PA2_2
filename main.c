@@ -1,34 +1,30 @@
-// Pseudocode for main components
+#include <stdio.h>
+#include <stdlib.h>
+#include "dictionary.h"
+#include "file_handler.h"
 
-// Main function to handle argument parsing and initial setup
 int main(int argc, char **argv) {
-    // Parse command-line arguments
-    // Open and read the dictionary file
-    // For each text file or directory argument:
-    //   If directory, traverse and find all .txt files
-    //   Open and check each file
-    // Report results
-    // Return EXIT_SUCCESS or EXIT_FAILURE
-}
+    if (argc < 3) {
+        fprintf(stderr, "Usage: %s <dictionary_path> <text_file1> [text_file2] ...\n", argv[0]);
+        return EXIT_FAILURE;
+    }
 
-// Function to traverse directories and find .txt files
-void traverseDirectory(const char *directoryPath) {
-    // Recursive directory traversal logic
-}
+    const char *dictionaryPath = argv[1];
 
-// Function to open and read files, breaking into words
-void checkSpellingInFile(const char *filePath) {
-    // Open file and read contents
-    // Break into words and check spelling
-}
+    // Load the dictionary
+    if (!loadDictionary(dictionaryPath)) {
+        fprintf(stderr, "Failed to load the dictionary from %s\n", dictionaryPath);
+        return EXIT_FAILURE;
+    }
 
-// Function to check if a word is in the dictionary
-bool isWordInDictionary(const char *word) {
-    // Lookup logic
-    return false; // Example return value
-}
+    // Process each text file or directory given as command-line arguments
+    for (int i = 2; i < argc; i++) {
+        checkSpelling(argv[i]);
+    }
 
-// Function to print error reports
-void reportError(const char *filePath, int lineNum, int colNum, const char *word) {
-    // Print format: filePath (lineNum): word
+    // Unload the dictionary and cleanup
+    unloadDictionary();
+
+    // Program completed successfully
+    return EXIT_SUCCESS;
 }

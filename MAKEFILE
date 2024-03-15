@@ -1,0 +1,40 @@
+# Compiler settings - Can change to clang if you prefer
+CC = gcc
+
+# Compiler flags
+CFLAGS = -Wall -g
+
+# Target executable name
+TARGET = spchk
+
+# Object files
+OBJS = main.o dictionary.o file_handler.o spell_check.o error_report.o
+
+# Linking the program
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+
+# Compiling individual object files
+main.o: main.c dictionary.h file_handler.h spell_check.h error_report.h
+	$(CC) $(CFLAGS) -c main.c
+
+dictionary.o: dictionary.c dictionary.h
+	$(CC) $(CFLAGS) -c dictionary.c
+
+file_handler.o: file_handler.c file_handler.h
+	$(CC) $(CFLAGS) -c file_handler.c
+
+spell_check.o: spell_check.c spell_check.h dictionary.h
+	$(CC) $(CFLAGS) -c spell_check.c
+
+error_report.o: error_report.c error_report.h
+	$(CC) $(CFLAGS) -c error_report.c
+
+# Cleaning up
+clean:
+	rm -f $(TARGET) $(OBJS)
+
+# Phony targets for cleaning and making all
+.PHONY: clean all
+
+all: clean $(TARGET)
